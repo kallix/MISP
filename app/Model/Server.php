@@ -348,6 +348,15 @@ class Server extends AppModel {
 							'test' => 'testBool',
 							'type' => 'boolean',
 					),
+					'attachments_dir' => array(
+							'level' => 1,
+							'description' => 'Directory where attachments are stored.',
+							'value' => APP . 'files',
+							'errorMessage' => '',
+							'null' => false,
+							'test' => 'testForWriteableDir',
+							'type' => 'string',
+					),
 					'cached_attachments' => array(
 							'level' => 1,
 							'description' => 'Allow the XML caches to include the encoded attachments.',
@@ -2191,6 +2200,12 @@ class Server extends AppModel {
 		if ($value === '') return true;
 		if (preg_match('@^\/?(([a-z0-9_.]+[a-z0-9_.\-.\:]*[a-z0-9_.\-.\:]|[a-z0-9_.])+\/?)+$@i', $value)) return true;
 		return 'Invalid characters in the path.';
+	}
+
+	public function testForWriteableDir($value) {
+		if (!is_dir($value)) return 'Not a valid directory.';
+		if (!is_writeable($value)) return 'Not a writeable directory.';
+		return true;
 	}
 
 	public function testDebug($value) {

@@ -292,7 +292,9 @@ class AttributesController extends AppController {
 	}
 
 	private function __downloadAttachment($attribute) {
-		$path = "files" . DS . $attribute['event_id'] . DS;
+		$this->loadModel('Server');
+		$attachments_dir = $this->Server->serverSettings['MISP']['attachments_dir']['value'];
+		$path = $attachments_dir . DS . $attribute['event_id'] . DS;
 		$file = $attribute['id'];
 		if ('attachment' == $attribute['type']) {
 			$filename = $attribute['value'];
@@ -2812,8 +2814,10 @@ class AttributesController extends AppController {
 					'recursive' => -1)
 			);
 			$counter = 0;
+			$this->loadModel('Server');
+			$attachments_dir = $this->Server->serverSettings['MISP']['attachments_dir']['value'];
 			foreach ($attributes as $attribute) {
-					$path = APP . "files" . DS . $attribute['Attribute']['event_id'] . DS;
+					$path = $attachments_dir . DS . $attribute['Attribute']['event_id'] . DS;
 					$file = $attribute['Attribute']['id'];
 					if (!file_exists($path . $file)) {
 							$counter++;

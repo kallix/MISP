@@ -334,7 +334,9 @@ class Event extends AppModel {
 		$this->EventTag->deleteAll(array('event_id' => $this->id));
 
 		// only delete the file if it exists
-		$filepath = APP . "files" . DS . $this->id;
+		$this->loadModel('Server');
+		$attachments_dir = $this->Server->serverSettings['MISP']['attachments_dir']['value'];
+		$filepath = $attachments_dir . DS . $this->id;
 		App::uses('Folder', 'Utility');
 		if (is_dir($filepath)) {
 			if (!$this->destroyDir($filepath)) {
