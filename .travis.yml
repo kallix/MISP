@@ -9,6 +9,10 @@ php:
 services:
     - redis
 
+env:
+    - DB=mariadb
+    - DB=pgsql
+
 sudo: required
 dist: trusty
 group: edge
@@ -16,6 +20,8 @@ group: edge
 addons:
     mariadb:
         - '10.0'
+    postgresql: 
+        - "9.6"
     hosts:
         - misp.local
         - localhost
@@ -30,6 +36,7 @@ addons:
             - php5-mysql
             - php5-dev
             - php5-cli
+            - php-pgsql
             - libapache2-mod-php5
 
 
@@ -67,10 +74,15 @@ install:
     - sudo chmod -R 755 `pwd`/app/Plugin/CakeResque/tmp
     # install MySQL
     - sudo chmod -R 777 `pwd`/INSTALL
-    - mysql -u root -e 'create database misp;'
-    - mysql -u root -e "grant usage on *.* to misp@localhost identified by 'blah'";
-    - mysql -u root -e "grant all privileges on misp.* to misp@localhost;"
-    - mysql -u misp -pblah misp < INSTALL/MYSQL.sql
+    - [[ "$DB" == "mariadb" ]] && mysql -u root -e 'create database misp;'
+    - [[ "$DB" == "mariadb" ]] && mysql -u root -e "grant usage on *.* to misp@localhost identified by 'blah'";
+    - [[ "$DB" == "mariadb" ]] && mysql -u root -e "grant all privileges on misp.* to misp@localhost;"
+    - [[ "$DB" == "mariadb" ]] && mysql -u misp -pblah misp < INSTALL/MYSQL.sql
+    - [[ "$DB" == "pgsql" ]] && psql -U postgres -c "CREATE USER misp WITH PASSWORD 'blah';"
+    - [[ "$DB" == "pgsql" ]] && psql -U postgres -c "CREATE DATABASE misp OWNER misp"
+    - 
+    - [[ "$DB" == "pgsql" ]] && PGPASSWORD=blah psql -U misp -d misp -f INSTALL/POSTGRESQL-structure.sql -h localhost
+    - [[ "$DB" == "pgsql" ]] && PGPASSWORD=blah psql -U misp -d misp -f INSTALL/POSTGRESQL-data-initial.sql -h localhost
     # configure apache virtual hosts
     - sudo chmod -R 777 `pwd`/build
     - sudo cp -f build/travis-ci-apache /etc/apache2/sites-available/misp.local.conf
@@ -82,7 +94,8 @@ install:
     # MISP configuration
     - sudo chmod -R 777 `pwd`/travis
     - sudo cp travis/bootstrap.php app/Config/bootstrap.php
-    - sudo cp travis/database.php app/Config/database.php
+    - [[ "$DB" == "mariadb" ]] && sudo cp travis/database.php app/Config/database.php
+    - [[ "$DB" == "pgsql" ]] && sudo cp travis/database-pgsql.php app/Config/database.php
     - sudo cp travis/core.php app/Config/core.php
     - sudo cp travis/config.php app/Config/config.php
     # Ensure the perms
