@@ -21,7 +21,7 @@ addons:
     mariadb:
         - '10.0'
     postgresql: 
-        - "9.6"
+        - "9.4"
     hosts:
         - misp.local
         - localhost
