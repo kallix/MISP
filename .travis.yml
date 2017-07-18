@@ -78,8 +78,8 @@ install:
     - if [[ "$DB" == "mariadb" ]]; then mysql -u root -e "grant usage on *.* to misp@localhost identified by 'blah'"; fi
     - if [[ "$DB" == "mariadb" ]]; then mysql -u root -e "grant all privileges on misp.* to misp@localhost;"; fi
     - if [[ "$DB" == "mariadb" ]]; then mysql -u misp -pblah misp < INSTALL/MYSQL.sql ; fi
-    - if [[ "$DB" == "pgsql" ]]; then psql -U postgres -c "CREATE USER misp WITH PASSWORD 'blah';"; fi
-    - if [[ "$DB" == "pgsql" ]]; then psql -U postgres -c "CREATE DATABASE misp OWNER misp"; fi
+    - if [[ "$DB" == "pgsql" ]]; then psql -h localhost -U postgres -c "CREATE USER misp WITH PASSWORD 'blah';"; fi
+    - if [[ "$DB" == "pgsql" ]]; then psql -h localhost -U postgres -c "CREATE DATABASE misp OWNER misp"; fi
     - 
     - if [[ "$DB" == "pgsql" ]]; then PGPASSWORD=blah psql -U misp -d misp -f INSTALL/POSTGRESQL-structure.sql -h localhost ; fi
     - if [[ "$DB" == "pgsql" ]]; then PGPASSWORD=blah psql -U misp -d misp -f INSTALL/POSTGRESQL-data-initial.sql -h localhost ; fi
