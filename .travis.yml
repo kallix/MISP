@@ -74,15 +74,15 @@ install:
     - sudo chmod -R 755 `pwd`/app/Plugin/CakeResque/tmp
     # install MySQL
     - sudo chmod -R 777 `pwd`/INSTALL
-    - [[ "$DB" == "mariadb" ]] && mysql -u root -e 'create database misp;'
-    - [[ "$DB" == "mariadb" ]] && mysql -u root -e "grant usage on *.* to misp@localhost identified by 'blah'";
-    - [[ "$DB" == "mariadb" ]] && mysql -u root -e "grant all privileges on misp.* to misp@localhost;"
-    - [[ "$DB" == "mariadb" ]] && mysql -u misp -pblah misp < INSTALL/MYSQL.sql
-    - [[ "$DB" == "pgsql" ]] && psql -U postgres -c "CREATE USER misp WITH PASSWORD 'blah';"
-    - [[ "$DB" == "pgsql" ]] && psql -U postgres -c "CREATE DATABASE misp OWNER misp"
+    - if [[ "$DB" == "mariadb" ]]; then mysql -u root -e 'create database misp;'; fi
+    - if [[ "$DB" == "mariadb" ]]; then mysql -u root -e "grant usage on *.* to misp@localhost identified by 'blah'"; fi
+    - if [[ "$DB" == "mariadb" ]]; then mysql -u root -e "grant all privileges on misp.* to misp@localhost;"; fi
+    - if [[ "$DB" == "mariadb" ]]; then mysql -u misp -pblah misp < INSTALL/MYSQL.sql ; fi
+    - if [[ "$DB" == "pgsql" ]]; then psql -U postgres -c "CREATE USER misp WITH PASSWORD 'blah';"; fi
+    - if [[ "$DB" == "pgsql" ]]; then psql -U postgres -c "CREATE DATABASE misp OWNER misp"; fi
     - 
-    - [[ "$DB" == "pgsql" ]] && PGPASSWORD=blah psql -U misp -d misp -f INSTALL/POSTGRESQL-structure.sql -h localhost
-    - [[ "$DB" == "pgsql" ]] && PGPASSWORD=blah psql -U misp -d misp -f INSTALL/POSTGRESQL-data-initial.sql -h localhost
+    - if [[ "$DB" == "pgsql" ]]; then PGPASSWORD=blah psql -U misp -d misp -f INSTALL/POSTGRESQL-structure.sql -h localhost ; fi
+    - if [[ "$DB" == "pgsql" ]]; then PGPASSWORD=blah psql -U misp -d misp -f INSTALL/POSTGRESQL-data-initial.sql -h localhost ; fi
     # configure apache virtual hosts
     - sudo chmod -R 777 `pwd`/build
     - sudo cp -f build/travis-ci-apache /etc/apache2/sites-available/misp.local.conf
@@ -94,8 +94,8 @@ install:
     # MISP configuration
     - sudo chmod -R 777 `pwd`/travis
     - sudo cp travis/bootstrap.php app/Config/bootstrap.php
-    - [[ "$DB" == "mariadb" ]] && sudo cp travis/database.php app/Config/database.php
-    - [[ "$DB" == "pgsql" ]] && sudo cp travis/database-pgsql.php app/Config/database.php
+    - if [[ "$DB" == "mariadb" ]]; then sudo cp travis/database.php app/Config/database.php; fi
+    - if [[ "$DB" == "pgsql" ]]; then sudo cp travis/database-pgsql.php app/Config/database.php; fi
     - sudo cp travis/core.php app/Config/core.php
     - sudo cp travis/config.php app/Config/config.php
     # Ensure the perms
