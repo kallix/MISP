@@ -1,7 +1,7 @@
 language: php
 
 php:
-    #- 5.6
+    - 5.6
     - 7.0
     #- 7.1
     #- nightly
@@ -21,8 +21,8 @@ group: edge
 addons:
     mariadb:
         - '10.0'
-    #postgresql: 
-    #    - "9.2"
+    postgresql: 
+        - "9.2"
     hosts:
         - misp.local
         - localhost
